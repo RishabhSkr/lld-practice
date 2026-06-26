@@ -1,0 +1,57 @@
+using System;
+using System.Collections.Generic;
+
+namespace LldPractice.CSharp.ConfigurationManagerSingleton
+{
+    public class ConfigurationManager
+    {
+        // 1. Static variable to hold the single instance
+        private static ConfigurationManager instance;
+
+        // 2. Lock object for thread safety (Double-checked locking ke liye)
+        private static readonly object lockObj = new object();
+
+        // 3. Dictionary to store settings
+        private Dictionary<string, string> settings;
+
+        // 4. Private constructor - taaki koi bahar se 'new ConfigurationManager()' na kar sake
+        private ConfigurationManager()
+        {
+            settings = new Dictionary<string, string>();
+            // Aap chaho toh constructor mein kuch default settings load kar sakte ho
+        }
+
+        // 5. GetInstance method - Singleton object lene ke liye
+        public static ConfigurationManager GetInstance()
+        {
+            if (instance == null)
+            {
+                lock (lockObj)
+                {
+                    if (instance == null)
+                    {
+                        instance = new ConfigurationManager();
+                    }
+                }
+            }
+            return instance;
+        }
+
+        // 6. Setting Save karne ke liye
+        public void SetSetting(string key, string value)
+        {
+            // Indexer ka use kiya hai - agar key exist karegi toh update ho jayegi, nahi toh nayi add ho jayegi
+            settings[key] = value;
+        }
+
+        // 7. Setting Read karne ke liye
+        public string GetSetting(string key)
+        {
+            if (settings.ContainsKey(key))
+            {
+                return settings[key];
+            }
+            return "Not Found";
+        }
+    }
+}
